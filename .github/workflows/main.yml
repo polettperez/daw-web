@@ -1,0 +1,33 @@
+name: Build & Push
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - test
+
+jobs:
+  build-and-push:
+    runs-on: self-hosted
+    steps:
+      - name: Clona repositorio
+        uses: actions/checkout@v4
+
+      - name: Logeate en Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Construye y sube la imagen
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: paulaperezrodriguez/daw-web:latest
+
+      - name: Levanta contenedor local en puerto 8888
+        run: |
+          docker stop daw-web || true
+          docker rm daw-web || true
+          docker run -d -p 8888:80 --name daw-web paulaperezrodriguez/daw-web:latest
