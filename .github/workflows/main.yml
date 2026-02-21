@@ -27,7 +27,8 @@ jobs:
           tags: paulaperezrodriguez/daw-web:latest
 
       - name: Levanta contenedor local en puerto 8888
+        shell: powershell
         run: |
-          docker stop daw-web || true
-          docker rm daw-web || true
+          docker stop daw-web -ErrorAction SilentlyContinue
+          docker rm daw-web -ErrorAction SilentlyContinue
           docker run -d -p 8888:80 --name daw-web paulaperezrodriguez/daw-web:latest
